@@ -1,0 +1,51 @@
+
+#### **Example Verilog Code (8x8 RAM)**  
+```verilog
+module simple_ram (
+    input clk,
+    input we,
+    input [2:0] addr,
+    input [7:0] din,
+    output reg [7:0] dout
+);
+    reg [7:0] mem [0:7];
+
+    always @(posedge clk) begin
+        if (we)
+            mem[addr] <= din;
+        else
+            dout <= mem[addr];
+    end
+endmodule
+```
+
+#### **Testbench Code**  
+```verilog
+module testbench;
+    reg clk, we;
+    reg [2:0] addr;
+    reg [7:0] din;
+    wire [7:0] dout;
+
+    simple_ram uut (.clk(clk), .we(we), .addr(addr), .din(din), .dout(dout));
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    initial begin
+        we = 1;
+        addr = 3'b010; din = 8'hAB; #10; // Write AB to address 2
+        we = 0;
+        addr = 3'b010; #10; // Read from address 2
+        $display("Read Data: %h", dout);
+        $finish;
+    end
+endmodule
+```
+
+#### **Expected Output**  
+```
+Read Data: AB
+```
